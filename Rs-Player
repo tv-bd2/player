@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rs Live Tv - Professional Player</title>
+    <style>
+        /* পুরো স্ক্রিন জুড়ে প্লেয়ার দেখানোর জন্য স্টাইল */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            overflow: hidden; /* স্ক্রলবার বন্ধ রাখার জন্য */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #player {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* এরর মেসেজের জন্য স্টাইল */
+        .error-message {
+            color: #fff;
+            font-family: sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="player"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/clappr@latest/dist/clappr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@clappr/hlsjs-playback@latest/dist/hlsjs-playback.min.js"></script>
+
+    <script>
+        // URL থেকে 'url' প্যারামিটারটি সংগ্রহ করা
+        const urlParams = new URLSearchParams(window.location.search);
+        const m3u8Url = urlParams.get('url');
+        
+        const playerElement = document.getElementById('player');
+
+        if (m3u8Url) {
+            // প্লেয়ার কনফিগারেশন
+            const player = new Clappr.Player({
+                source: m3u8Url,
+                parentId: '#player',
+                plugins: [HlsjsPlayback], // HLS সাপোর্ট যুক্ত করা হলো
+                width: '100%',
+                height: '100%',
+                autoPlay: true,
+                mute: true, // ব্রাউজারের অটো-প্লে পলিসির কারণে মিউট রাখা ভালো
+                mimeType: 'application/x-mpegURL',
+                playback: {
+                    hlsjsConfig: {
+                        // স্ট্রিমিং পারফরম্যান্স উন্নত করার জন্য
+                        enableWorker: true,
+                        lowLatencyMode: true,
+                    }
+                },
+                watermark: "https://via.placeholder.com/150x50/000000/FFFFFF?text=RS+LIVE+TV", // আপনার লোগো থাকলে এখানে লিংক দিন
+                position: 'top-right',
+            });
+        } else {
+            // যদি URL না পাওয়া যায় তবে স্ক্রিনে মেসেজ দেখাবে
+            playerElement.innerHTML = `
+                <div class="error-message">
+                    <h1>লিংক পাওয়া যায়নি!</h1>
+                    <p>অনুগ্রহ করে URL-এর শেষে <b>?url=আপনার_লিংক.m3u8</b> যোগ করুন।</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
