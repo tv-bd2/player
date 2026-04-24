@@ -1,89 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
-    <title>RS Player - Auto Sound</title>
-
-    <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
-    <script>
-        jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
-    </script>
-
+    <title>RS Player - Fluid</title>
+    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; }
-        html,body { width:100%; height:100%; background:#000; overflow:hidden; }
-        #player { width:100%; height:100%; position: absolute; top:0; left:0; }
-        #loader {
-            position:fixed; top:0; left:0; width:100%; height:100%;
-            background:#000; display:flex; justify-content:center; align-items:center;
-            z-index:9999; flex-direction:column;
-        }
-        .spinner {
-            width:50px; height:50px; border:4px solid rgba(255,255,255,.1);
-            border-top:4px solid #00c3ff; border-radius:50%;
-            animation:spin 1s linear infinite;
-        }
-        @keyframes spin { 100% { transform:rotate(360deg); } }
-        #loader p { margin-top:15px; color:#fff; font-family: sans-serif; font-size:14px; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; }
+        #video-container { width: 100%; height: 100%; }
     </style>
 </head>
 <body>
 
-<div id="loader">
-    <div class="spinner"></div>
-    <p id="status-text">Loading Stream...</p>
+<div id="video-container">
+    <video id="my-video">
+        <source src="আপনার_m3u8_লিঙ্ক_এখানে" type="application/x-mpegURL">
+    </video>
 </div>
 
-<div id="player"></div>
-
 <script>
-    function getStreamUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        return urlParams.get('url');
-    }
-
-    const streamSource = getStreamUrl();
-
-    if (streamSource) {
-        const player = jwplayer("player");
-
-        player.setup({
-            playlist: [{
-                file: streamSource,
-                type: "hls"
-            }],
-            width: "100%",
-            height: "100%",
-            autostart: true,  // অটোমেটিক প্লে
-            mute: false,       // মিউট থাকবে না (সাউন্ড হবে)
-            stretching: "uniform",
-            controls: true
-        });
-
-        player.on("ready", function() {
-            document.getElementById("loader").style.display = "none";
-            
-            // ব্রাউজার যদি অটো-সাউন্ড ব্লক করে, তবে এই কমান্ডটি সাউন্ড আনমিউট করার চেষ্টা করবে
-            player.setMute(false);
-            player.setVolume(100);
-        });
-
-        player.on("play", function() {
-            document.getElementById("loader").style.display = "none";
-            // ভিডিও প্লে হওয়ার সময় আবার সাউন্ড চেক করা
-            if(player.getMute()) {
-                player.setMute(false);
-            }
-        });
-
-        player.on("error", function() {
-            document.getElementById("status-text").innerText = "Stream Failed!";
-        });
-
-    } else {
-        document.getElementById("status-text").innerText = "No URL Provided!";
-    }
+    var myFP = fluidPlayer('my-video', {
+        layoutControls: {
+            fillToContainer: true, // পুরো স্ক্রিন জুড়ে থাকবে
+            primaryColor: "#00c3ff", // আপনার ব্র্যান্ড কালার
+            posterImage: 'your-thumbnail.jpg',
+            autoPlay: true,
+            mute: false,
+            allowLandscapeOnFullScreen: true, // মোবাইল রোটেশন সহজ করবে
+            playbackRateControl: true,
+            allowDownload: false
+        }
+    });
 </script>
 
 </body>
