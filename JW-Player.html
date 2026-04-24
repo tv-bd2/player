@@ -3,42 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player - Stretch to Fit</title>
+    <title>RS Player - Professional</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
         jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
     </script>
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        html, body { width:100%; height:100%; background:#000; overflow:hidden; }
+        html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', Roboto, sans-serif; }
         
-        #player { width:100% !important; height:100% !important; position: absolute; top:0; left:0; }
+        #player { width:100%; height:100%; position: absolute; top:0; left:0; }
 
-        /* ভিডিওকে জুম না করে টেনে লম্বা করে পুরো স্ক্রিনে ফিট করার জন্য CSS */
-        .jw-video.jw-reset {
-            object-fit: fill !important; /* এটি ভিডিওর কোনো অংশ কাটবে না, কিন্তু টেনে লম্বা করে দিবে */
-        }
-
-        /* লোডার */
+        /* প্রফেশনাল লোডার ডিজাইন */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
-            background:#000; display:flex; justify-content:center; align-items:center;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            display:flex; justify-content:center; align-items:center;
             z-index:9999; flex-direction:column;
         }
-        .spinner {
-            width:50px; height:50px; border:4px solid rgba(255,255,255,.1);
-            border-top:4px solid #00c3ff; border-radius:50%;
-            animation:spin 1s linear infinite;
+
+        .loader-content {
+            text-align: center;
+            animation: pulse 2s infinite ease-in-out;
         }
-        @keyframes spin { 100% { transform:rotate(360deg); } }
+
+        /* TV Icon Animation */
+        .tv-icon {
+            font-size: 60px;
+            color: #00c3ff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 195, 255, 0.6);
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .brand-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .brand-name span {
+            color: #00c3ff;
+        }
+
+        .loading-bar {
+            width: 150px;
+            height: 3px;
+            background: rgba(255,255,255,0.1);
+            margin: 20px auto;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loading-bar::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, #00c3ff, transparent);
+            animation: loading 1.5s infinite;
+        }
+
+        #status-text {
+            color: #888;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
+        @keyframes loading {
+            100% { left: 100%; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Video Stretch Fix */
+        .jw-video.jw-reset {
+            object-fit: fill !important;
+        }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="spinner"></div>
+    <div class="loader-content">
+        <i class="fas fa-tv tv-icon"></i>
+        <div class="brand-name">RS <span>Live TV</span></div>
+        <div class="loading-bar"></div>
+        <p id="status-text">Connecting to Stream...</p>
+    </div>
 </div>
 
 <div id="player"></div>
@@ -63,21 +132,35 @@
             height: "100%",
             autostart: true,
             mute: false,
-            // 'exactfit' ভিডিওকে টেনে স্ক্রিনের চার কোণায় পৌঁছে দেয় (কোনো অংশ কাটে না)
-            stretching: "exactfit", 
-            controls: true
+            stretching: "exactfit", // ভিডিও না কেটে স্ক্রিনে ফিট করবে
+            controls: true,
+            displaytitle: false
         });
 
         player.on("ready", function() {
-            document.getElementById("loader").style.display = "none";
+            // লোডারটি ১.৫ সেকেন্ড পর বন্ধ হবে যাতে এনিমেশনটি ইউজার দেখতে পায়
+            setTimeout(function(){
+                document.getElementById("loader").style.opacity = "0";
+                setTimeout(function(){
+                    document.getElementById("loader").style.display = "none";
+                }, 500);
+            }, 1500);
+            
             player.setMute(false);
             player.setVolume(100);
         });
 
         player.on("play", function() {
-            document.getElementById("loader").style.display = "none";
+            player.setMute(false);
         });
 
+        player.on("error", function() {
+            document.getElementById("status-text").innerText = "Connection Failed!";
+            document.getElementById("status-text").style.color = "#ff4c4c";
+        });
+
+    } else {
+        document.getElementById("status-text").innerText = "URL Not Found!";
     }
 </script>
 
