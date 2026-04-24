@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Slim</title>
+    <title>RS Player Slim - Neon</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
@@ -14,92 +14,119 @@
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', sans-serif; }
+        html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', sans-serif; position: fixed; }
         
-        #player { width:100%; height:100%; position: absolute; top:0; left:0; }
+        #player { width:100% !important; height:100% !important; position: absolute; top:0; left:0; }
 
-        /* স্লিম এবং ছোট লোডার */
+        /* লোডার কন্টেইনার */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
-            background:#000;
-            display:flex; justify-content:center; align-items:center;
-            z-index:9999;
+            background: #000; display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction: column;
         }
 
-        .loader-box {
-            text-align: center;
+        /* অ্যানিমেশন সাইজ অনেক ছোট করা হয়েছে (১২০px) */
+        .loader-container {
             position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* টিভি আইকন - ছোট এবং চিকন */
+        .loader-brand { text-align: center; z-index: 10; }
+
+        /* আইকন ছোট করা হয়েছে */
         .tv-icon {
-            font-size: 40px;
+            font-size: 28px;
             color: #00c3ff;
-            margin-bottom: 8px;
-            display: block;
-            animation: pulse-lite 1.5s infinite ease-in-out;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px rgba(0, 195, 255, 0.7);
         }
 
-        /* ব্র্যান্ড নাম - চিকন এবং ছোট */
+        /* নাম ছোট করা হয়েছে */
         .brand-name {
-            font-size: 16px;
-            font-weight: 500;
+            font-size: 12px;
+            font-weight: 700;
             color: #fff;
-            letter-spacing: 3px;
+            letter-spacing: 1px;
             text-transform: uppercase;
         }
-
         .brand-name span { color: #00c3ff; }
 
-        /* চিকন লোডিং বার */
-        .slim-bar {
-            width: 100px;
-            height: 2px;
-            background: rgba(255,255,255,0.1);
-            margin: 12px auto 0;
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .slim-bar::after {
-            content: '';
+        /* নিয়ন রিং - অনেক চিকন করা হয়েছে (১.৫px) */
+        .neon-ring {
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: ring-rotate 2s linear infinite;
+        }
+
+        .neon-ring:nth-child(1) {
+            border-bottom: 1.5px solid #00c3ff;
+            box-shadow: 0 2px 8px rgba(0, 195, 255, 0.4);
+        }
+
+        .neon-ring:nth-child(2) {
+            border-right: 1.5px solid rgba(255, 255, 255, 0.5);
+            animation: ring-rotate 1.5s linear infinite reverse;
+        }
+
+        /* পার্টিকেলগুলো ছোট করা হয়েছে */
+        .particles {
+            position: absolute;
+            width: 4px;
+            height: 4px;
             background: #00c3ff;
-            animation: slide 1.2s infinite linear;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #00c3ff;
+            animation: particle-move 2s linear infinite;
         }
 
-        @keyframes slide {
-            100% { left: 100%; }
+        /* পার্টিকেল রেডিয়াস কমানো হয়েছে (৬০px) */
+        .particles:nth-child(3) { animation-delay: 0s; top: 0; left: 50%; }
+        .particles:nth-child(4) { animation-delay: 0.5s; top: 50%; right: 0; }
+        .particles:nth-child(5) { animation-delay: 1s; bottom: 0; left: 50%; }
+        .particles:nth-child(6) { animation-delay: 1.5s; top: 50%; left: 0; }
+
+        @keyframes ring-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        @keyframes pulse-lite {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(0.95); }
+        @keyframes particle-move {
+            0% { transform: rotate(0deg) translate(60px) rotate(0deg); opacity: 1; }
+            100% { transform: rotate(360deg) translate(60px) rotate(-360deg); opacity: 0.7; }
         }
 
         /* ভিডিও স্ট্রেচ ফিক্স */
-        .jw-video.jw-reset {
-            object-fit: fill !important;
-        }
-
-        /* ইন্সট্যান্ট হাইড ইফেক্ট */
-        .hide-loader {
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease;
+        .jw-video.jw-reset { object-fit: fill !important; }
+        
+        /* ইন্সট্যান্ট হাইড ক্লাস */
+        .hide-now {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: opacity 0.2s ease !important;
         }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="loader-box">
-        <i class="fas fa-tv tv-icon"></i>
-        <div class="brand-name">RS <span>Live TV</span></div>
-        <div class="slim-bar"></div>
+    <div class="loader-container">
+        <div class="neon-ring"></div>
+        <div class="neon-ring"></div>
+        <div class="particles"></div>
+        <div class="particles"></div>
+        <div class="particles"></div>
+        <div class="particles"></div>
+
+        <div class="loader-brand">
+            <i class="fas fa-tv tv-icon"></i>
+            <div class="brand-name">RS <span>TV</span></div>
+        </div>
     </div>
 </div>
 
@@ -126,7 +153,8 @@
             autostart: true,
             mute: false,
             stretching: "exactfit", 
-            controls: true
+            controls: true,
+            displaytitle: false
         });
 
         player.on("ready", function() {
@@ -134,17 +162,15 @@
             player.setVolume(100);
         });
 
-        // ভিডিও প্লে হওয়ার সাথে সাথেই হাইড হবে
+        // ভিডিও প্লে শুরু হওয়া মাত্রই হাইড হবে (Instant Hide)
         player.on("play", function() {
-            document.getElementById("loader").classList.add("hide-loader");
+            document.getElementById("loader").classList.add("hide-now");
         });
 
         player.on("error", function() {
-            alert("Stream Failed!");
+            alert("Stream Offline!");
         });
 
-    } else {
-        document.querySelector(".brand-name").innerHTML = "<span>No URL</span>";
     }
 </script>
 
