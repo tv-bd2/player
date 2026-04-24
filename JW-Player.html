@@ -1,34 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>RS Player - Fluid</title>
-    <script src="https://cdn.fluidplayer.com/v3/current/fluidplayer.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>RS Player PRO - Auto Rotate</title>
+    
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/@videojs/themes@1.0.1/forest/index.css" rel="stylesheet">
+
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; }
-        #video-container { width: 100%; height: 100%; }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
+        .video-js { width: 100% !important; height: 100% !important; }
+        
+        /* লোডার স্টাইল */
+        #loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: flex; justify-content: center; align-items: center;
+            z-index: 10; color: white; font-family: sans-serif;
+        }
     </style>
 </head>
 <body>
 
-<div id="video-container">
-    <video id="my-video">
-        <source src="আপনার_m3u8_লিঙ্ক_এখানে" type="application/x-mpegURL">
-    </video>
-</div>
+<div id="loading-overlay">Loading RS Player...</div>
+
+<video-js id="rs-player" class="vjs-big-play-centered vjs-theme-forest"></video-js>
+
+<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
 
 <script>
-    var myFP = fluidPlayer('my-video', {
-        layoutControls: {
-            fillToContainer: true, // পুরো স্ক্রিন জুড়ে থাকবে
-            primaryColor: "#00c3ff", // আপনার ব্র্যান্ড কালার
-            posterImage: 'your-thumbnail.jpg',
-            autoPlay: true,
-            mute: false,
-            allowLandscapeOnFullScreen: true, // মোবাইল রোটেশন সহজ করবে
-            playbackRateControl: true,
-            allowDownload: false
-        }
-    });
+    // URL থেকে স্ট্রিমিং লিঙ্ক নেওয়া
+    const urlParams = new URLSearchParams(window.location.search);
+    const streamUrl = urlParams.get('url');
+
+    if (streamUrl) {
+        const player = videojs('rs-player', {
+            autoplay: 'muted', // ব্রাউজার পলিসির কারণে মিউট হয়ে অটো-প্লে হবে
+            controls: true,
+            responsive: true,
+            fluid: false,
+            liveui: true,
+            sources: [{
+                src: streamUrl,
+                type: 'application/x-mpegURL'
+            }]
+        });
+
+        player.ready(function() {
+            document.getElementById('loading-overlay').style.display = 'none';
+            
+            // মোবাইল ফুলস্ক্রিন ওরিয়েন্টেশন ফিক্স
+            this.on('fullscreenchange', function() {
+                if (this.isFullscreen()) {
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(function(error) {
+                            console.log("Orientation lock failed: ", error);
+                        });
+                    }
+                } else {
+                    if (screen.orientation && screen.orientation.unlock) {
+                        screen.orientation.unlock();
+                    }
+                }
+            });
+        });
+
+        // এরর হ্যান্ডেলিং
+        player.on('error', function() {
+            alert("Stream failed to load!");
+        });
+
+    } else {
+        document.getElementById('loading-overlay').innerText = "No Stream URL Found!";
+    }
 </script>
 
 </body>
