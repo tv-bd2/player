@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player - Professional</title>
+    <title>RS Player PRO - Premium Loading</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
@@ -14,35 +14,60 @@
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', Roboto, sans-serif; }
         
-        #player { width:100%; height:100%; position: absolute; top:0; left:0; }
+        /* পূর্ণাঙ্গ স্ক্রিন এবং নচ এরিয়া ব্যবহার */
+        html, body { 
+            width:100%; 
+            height:100%; 
+            background:#000; 
+            overflow:hidden; 
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            position: fixed; /* মোবাইল ব্রাউজারে স্ক্রলিং বন্ধ করতে */
+        }
+        
+        #player { 
+            width:100% !important; 
+            height:100% !important; 
+            position: absolute; 
+            top:0; 
+            left:0; 
+        }
 
-        /* প্রফেশনাল লোডার ডিজাইন */
+        /* প্রিমিয়াম নিয়ন পার্টিকেল লোডার */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
+            background: #000;
             background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
             display:flex; justify-content:center; align-items:center;
-            z-index:9999; flex-direction:column;
+            z-index:9999;
+            flex-direction: column;
         }
 
-        .loader-content {
+        .loader-container {
+            position: relative;
+            width: 250px;
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* ব্র্যান্ডিং এলিমেন্ট (মাঝখানে স্থির থাকবে) */
+        .loader-brand {
             text-align: center;
-            animation: pulse 2s infinite ease-in-out;
+            z-index: 10;
         }
 
-        /* TV Icon Animation */
         .tv-icon {
-            font-size: 60px;
+            font-size: 55px;
             color: #00c3ff;
-            margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(0, 195, 255, 0.6);
-            animation: float 3s infinite ease-in-out;
+            margin-bottom: 12px;
+            text-shadow: 0 0 15px rgba(0, 195, 255, 0.7);
         }
 
         .brand-name {
             font-size: 24px;
-            font-weight: bold;
+            font-weight: 800;
             color: #fff;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -50,64 +75,107 @@
 
         .brand-name span {
             color: #00c3ff;
+            text-shadow: 0 0 10px rgba(0, 195, 255, 0.5);
         }
 
-        .loading-bar {
-            width: 150px;
-            height: 3px;
-            background: rgba(255,255,255,0.1);
-            margin: 20px auto;
-            border-radius: 5px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .loading-bar::after {
-            content: '';
+        /* নিয়ন রিং (ঘুরতে থাকবে) */
+        .neon-ring {
             position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, #00c3ff, transparent);
-            animation: loading 1.5s infinite;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            animation: ring-rotate 2s linear infinite;
         }
+
+        .neon-ring:nth-child(1) {
+            border-bottom: 4px solid #00c3ff;
+            filter: blur(1px);
+            box-shadow: 0 4px 15px rgba(0, 195, 255, 0.5);
+        }
+
+        .neon-ring:nth-child(2) {
+            border-right: 4px solid #fff;
+            filter: blur(2px);
+            animation: ring-rotate 1.5s linear infinite reverse;
+            opacity: 0.7;
+        }
+
+        /* পার্টিকেল এফেক্ট */
+        .particles {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #00c3ff;
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 10px #00c3ff, 0 0 20px #00c3ff, 0 0 30px #00c3ff;
+            animation: particle-move 2s linear infinite;
+        }
+
+        .particles:nth-child(3) { animation-delay: 0s; top: 0; left: 50%; }
+        .particles:nth-child(4) { animation-delay: 0.5s; top: 50%; right: 0; }
+        .particles:nth-child(5) { animation-delay: 1s; bottom: 0; left: 50%; }
+        .particles:nth-child(6) { animation-delay: 1.5s; top: 50%; left: 0; }
 
         #status-text {
-            color: #888;
-            font-size: 12px;
+            margin-top: 30px;
+            color: #666;
+            font-size: 11px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         /* Animations */
-        @keyframes loading {
-            100% { left: 100%; }
+        @keyframes ring-rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes particle-move {
+            0% { transform: rotate(0deg) translate(125px) rotate(0deg); opacity: 1; }
+            100% { transform: rotate(360deg) translate(125px) rotate(-360deg); opacity: 0.8; }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.8; }
-        }
-
-        /* Video Stretch Fix */
+        /* ভিডিওকে জুম বা স্ট্রেচ না করে পূর্ণাঙ্গ স্ক্রিনে কিনারা পর্যন্ত পৌঁছে দেওয়ার জন্য CSS */
         .jw-video.jw-reset {
-            object-fit: fill !important;
+            object-fit: cover !important; /* ক্যামেরা নচ এরিয়ার গ্যাপ পূরণের জন্য */
+        }
+        
+        /* iOS-এর জন্য নিরাপদ এরিয়া ফিক্স */
+        @supports (padding: env(safe-area-inset-top)) {
+            .jw-video.jw-reset {
+                width: calc(100vw + env(safe-area-inset-left) + env(safe-area-inset-right)) !important;
+                height: calc(100vh + env(safe-area-inset-top) + env(safe-area-inset-bottom)) !important;
+                margin-left: calc(-1 * env(safe-area-inset-left)) !important;
+                margin-top: calc(-1 * env(safe-area-inset-top)) !important;
+            }
+        }
+
+        /* ফেড আউট ট্রানজিশন */
+        .fade-out {
+            opacity: 0;
+            transition: opacity 1s ease;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="loader-content">
-        <i class="fas fa-tv tv-icon"></i>
-        <div class="brand-name">RS <span>Live TV</span></div>
-        <div class="loading-bar"></div>
-        <p id="status-text">Connecting to Stream...</p>
+    <div class="loader-container">
+        <div class="neon-ring"></div>
+        <div class="neon-ring"></div>
+        <div class="particles"></div>
+        <div class="particles"></div>
+        <div class="particles"></div>
+        <div class="particles"></div>
+
+        <div class="loader-brand">
+            <i class="fas fa-tv tv-icon"></i>
+            <div class="brand-name">RS <span>Live TV</span></div>
+        </div>
     </div>
+    <p id="status-text">Optimizing Stream...</p>
 </div>
 
 <div id="player"></div>
@@ -132,26 +200,27 @@
             height: "100%",
             autostart: true,
             mute: false,
-            stretching: "exactfit", // ভিডিও না কেটে স্ক্রিনে ফিট করবে
+            stretching: "fill", // ভিডিও না কেটে নচ এরিয়া পর্যন্ত পৌঁছাবে
             controls: true,
-            displaytitle: false
+            displaytitle: false,
+            sharing: false
         });
 
         player.on("ready", function() {
-            // লোডারটি ১.৫ সেকেন্ড পর বন্ধ হবে যাতে এনিমেশনটি ইউজার দেখতে পায়
-            setTimeout(function(){
-                document.getElementById("loader").style.opacity = "0";
-                setTimeout(function(){
-                    document.getElementById("loader").style.display = "none";
-                }, 500);
-            }, 1500);
-            
             player.setMute(false);
             player.setVolume(100);
         });
 
+        // শুধুমাত্র ভিডিওর ছবি যখন আসলে স্ক্রিনে আসবে, তখন লোডার সরবে
         player.on("play", function() {
-            player.setMute(false);
+            const loader = document.getElementById("loader");
+            // ভিডিও আসার পর ১ সেকেন্ড ডিলে দেওয়া হয়েছে লোডারটি সুন্দরভাবে সরানোর জন্য
+            setTimeout(function(){
+                loader.classList.add("fade-out");
+                setTimeout(function(){
+                    loader.style.display = "none";
+                }, 1000); // ১ সেকেন্ড ট্রানজিশন টাইম
+            }, 1000);
         });
 
         player.on("error", function() {
@@ -160,7 +229,7 @@
         });
 
     } else {
-        document.getElementById("status-text").innerText = "URL Not Found!";
+        document.getElementById("status-text").innerText = "URL Not Provided!";
     }
 </script>
 
