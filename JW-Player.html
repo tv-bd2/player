@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player PRO - Full Screen Zoom</title>
+    <title>RS Player - Stretch to Fit</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
@@ -12,29 +12,16 @@
 
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
+        html, body { width:100%; height:100%; background:#000; overflow:hidden; }
         
-        /* পুরো স্ক্রিন ব্যবহার করার জন্য */
-        html, body { 
-            width:100%; 
-            height:100%; 
-            background:#000; 
-            overflow:hidden; 
-        }
+        #player { width:100% !important; height:100% !important; position: absolute; top:0; left:0; }
 
-        #player { 
-            width:100% !important; 
-            height:100% !important; 
-            position: absolute; 
-            top:0; 
-            left:0; 
-        }
-
-        /* ক্যামেরার নচ এরিয়া বা পাঞ্চ-হোল এরিয়াতে ভিডিও পৌঁছে দেওয়ার ম্যাজিক CSS */
+        /* ভিডিওকে জুম না করে টেনে লম্বা করে পুরো স্ক্রিনে ফিট করার জন্য CSS */
         .jw-video.jw-reset {
-            object-fit: cover !important; /* ভিডিও জুম করে ফাঁকা জায়গা ভরাট করবে */
+            object-fit: fill !important; /* এটি ভিডিওর কোনো অংশ কাটবে না, কিন্তু টেনে লম্বা করে দিবে */
         }
 
-        /* লোডার ডিজাইন */
+        /* লোডার */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
             background:#000; display:flex; justify-content:center; align-items:center;
@@ -46,14 +33,12 @@
             animation:spin 1s linear infinite;
         }
         @keyframes spin { 100% { transform:rotate(360deg); } }
-        #loader p { margin-top:15px; color:#fff; font-family: sans-serif; font-size:14px; }
     </style>
 </head>
 <body>
 
 <div id="loader">
     <div class="spinner"></div>
-    <p id="status-text">Loading Stream...</p>
 </div>
 
 <div id="player"></div>
@@ -78,39 +63,21 @@
             height: "100%",
             autostart: true,
             mute: false,
-            stretching: "fill", // ভিডিওকে জুম-টু-ফিল করবে
-            controls: true,
-            displaytitle: false
+            // 'exactfit' ভিডিওকে টেনে স্ক্রিনের চার কোণায় পৌঁছে দেয় (কোনো অংশ কাটে না)
+            stretching: "exactfit", 
+            controls: true
         });
 
         player.on("ready", function() {
             document.getElementById("loader").style.display = "none";
-            
-            // অটো-প্লে সাউন্ড ফিক্স
             player.setMute(false);
             player.setVolume(100);
-
-            // ফুলস্ক্রিন করলে ল্যান্ডস্কেপ মোড করার চেষ্টা করা
-            player.on('fullscreenchange', function(e) {
-                if(e.fullscreen && screen.orientation && screen.orientation.lock) {
-                    screen.orientation.lock('landscape').catch(function(){});
-                }
-            });
         });
 
         player.on("play", function() {
             document.getElementById("loader").style.display = "none";
-            if(player.getMute()) {
-                player.setMute(false);
-            }
         });
 
-        player.on("error", function() {
-            document.getElementById("status-text").innerText = "Stream Offline!";
-        });
-
-    } else {
-        document.getElementById("status-text").innerText = "No URL Provided!";
     }
 </script>
 
