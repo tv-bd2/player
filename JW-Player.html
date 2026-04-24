@@ -3,75 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>RS Player PRO - Auto Rotate</title>
-    
-    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
-    <link href="https://unpkg.com/@videojs/themes@1.0.1/forest/index.css" rel="stylesheet">
+    <title>RS Player PRO - Enhanced</title>
+
+    <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
+    <script>
+        jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
+    </script>
 
     <style>
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; overflow: hidden; }
-        .video-js { width: 100% !important; height: 100% !important; }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html,body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* লোডার স্টাইল */
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #000; display: flex; justify-content: center; align-items: center;
-            z-index: 10; color: white; font-family: sans-serif;
+        #player { width:100%; height:100%; position: absolute; top:0; left:0; }
+
+        /* আধুনিক লোডার */
+        #loader {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            background: radial-gradient(circle, #1a1a1a 0%, #000 100%);
+            display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction:column;
+        }
+        .spinner {
+            width:60px; height:60px; border:3px solid rgba(0, 195, 255, 0.1);
+            border-top:3px solid #00c3ff; border-radius:50%;
+            animation:spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            box-shadow: 0 0 15px rgba(0, 195, 255, 0.2);
+        }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
+        
+        #status-text { 
+            margin-top:20px; color:#00c3ff; font-weight: 500;
+            letter-spacing: 1px; text-transform: uppercase; font-size: 12px;
+        }
+
+        /* অটো-প্লে ব্লক হলে আনমিউট করার প্রম্পট */
+        #unmute-overlay {
+            position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 195, 255, 0.8); color: white; padding: 8px 15px;
+            border-radius: 20px; font-size: 14px; cursor: pointer; display: none; z-index: 100;
         }
     </style>
 </head>
 <body>
 
-<div id="loading-overlay">Loading RS Player...</div>
+<div id="loader">
+    <div class="spinner"></div>
+    <p id="status-text">Connecting to Server...</p>
+</div>
 
-<video-js id="rs-player" class="vjs-big-play-centered vjs-theme-forest"></video-js>
+<div id="unmute-overlay" onclick="handleUnmute()">🔊 Tap to Unmute</div>
 
-<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+<div id="player"></div>
 
 <script>
-    // URL থেকে স্ট্রিমিং লিঙ্ক নেওয়া
-    const urlParams = new URLSearchParams(window.location.search);
-    const streamUrl = urlParams.get('url');
+    function getStreamUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('url');
+    }
 
-    if (streamUrl) {
-        const player = videojs('rs-player', {
-            autoplay: 'muted', // ব্রাউজার পলিসির কারণে মিউট হয়ে অটো-প্লে হবে
+    const streamSource = getStreamUrl();
+
+    if (streamSource) {
+        const player = jwplayer("player");
+
+        player.setup({
+            playlist: [{
+                file: streamSource,
+                type: "hls"
+            }],
+            width: "100%",
+            height: "100%",
+            autostart: true,
+            mute: false, 
+            stretching: "uniform",
             controls: true,
-            responsive: true,
-            fluid: false,
-            liveui: true,
-            sources: [{
-                src: streamUrl,
-                type: 'application/x-mpegURL'
-            }]
+            sharing: false,
+            displaytitle: false,
+            logo: {
+                file: 'your-logo-url.png', // এখানে আপনার লোগোর লিঙ্ক দিতে পারেন
+                link: 'https://yourwebsite.com',
+                hide: false,
+                position: 'top-right'
+            }
         });
 
-        player.ready(function() {
-            document.getElementById('loading-overlay').style.display = 'none';
+        player.on("ready", function() {
+            document.getElementById("loader").style.display = "none";
             
-            // মোবাইল ফুলস্ক্রিন ওরিয়েন্টেশন ফিক্স
-            this.on('fullscreenchange', function() {
-                if (this.isFullscreen()) {
-                    if (screen.orientation && screen.orientation.lock) {
-                        screen.orientation.lock('landscape').catch(function(error) {
-                            console.log("Orientation lock failed: ", error);
-                        });
-                    }
-                } else {
-                    if (screen.orientation && screen.orientation.unlock) {
-                        screen.orientation.unlock();
-                    }
+            // মোবাইল ফুলস্ক্রিন ফিক্স
+            const playerContainer = document.getElementById("player");
+            player.on('fullscreenchange', function(e) {
+                if(e.fullscreen && screen.orientation && screen.orientation.lock) {
+                    screen.orientation.lock('landscape').catch(() => {});
                 }
             });
         });
 
-        // এরর হ্যান্ডেলিং
-        player.on('error', function() {
-            alert("Stream failed to load!");
+        player.on("play", function() {
+            document.getElementById("loader").style.display = "none";
+            
+            // অটো-প্লে ব্লক হয়েছে কি না চেক করা
+            if (player.getMute()) {
+                document.getElementById("unmute-overlay").style.display = "block";
+            }
+        });
+
+        player.on("error", function() {
+            document.getElementById("status-text").innerText = "Stream Offline or Invalid!";
+            document.getElementById("status-text").style.color = "#ff4c4c";
         });
 
     } else {
-        document.getElementById('loading-overlay').innerText = "No Stream URL Found!";
+        document.getElementById("status-text").innerText = "Error: No Stream Link!";
+    }
+
+    function handleUnmute() {
+        const player = jwplayer("player");
+        player.setMute(false);
+        player.setVolume(100);
+        document.getElementById("unmute-overlay").style.display = "none";
     }
 </script>
 
