@@ -25,7 +25,6 @@
             z-index:9999; flex-direction: column;
         }
 
-        /* অ্যানিমেশন সাইজ অনেক ছোট করা হয়েছে (১২০px) */
         .loader-container {
             position: relative;
             width: 120px;
@@ -37,7 +36,6 @@
 
         .loader-brand { text-align: center; z-index: 10; }
 
-        /* আইকন ছোট করা হয়েছে */
         .tv-icon {
             font-size: 28px;
             color: #00c3ff;
@@ -45,7 +43,6 @@
             text-shadow: 0 0 10px rgba(0, 195, 255, 0.7);
         }
 
-        /* নাম ছোট করা হয়েছে */
         .brand-name {
             font-size: 12px;
             font-weight: 700;
@@ -55,7 +52,6 @@
         }
         .brand-name span { color: #00c3ff; }
 
-        /* নিয়ন রিং - অনেক চিকন করা হয়েছে (১.৫px) */
         .neon-ring {
             position: absolute;
             width: 100%;
@@ -74,7 +70,6 @@
             animation: ring-rotate 1.5s linear infinite reverse;
         }
 
-        /* পার্টিকেলগুলো ছোট করা হয়েছে */
         .particles {
             position: absolute;
             width: 4px;
@@ -85,7 +80,6 @@
             animation: particle-move 2s linear infinite;
         }
 
-        /* পার্টিকেল রেডিয়াস কমানো হয়েছে (৬০px) */
         .particles:nth-child(3) { animation-delay: 0s; top: 0; left: 50%; }
         .particles:nth-child(4) { animation-delay: 0.5s; top: 50%; right: 0; }
         .particles:nth-child(5) { animation-delay: 1s; bottom: 0; left: 50%; }
@@ -104,18 +98,26 @@
         /* ভিডিও স্ট্রেচ ফিক্স */
         .jw-video.jw-reset { object-fit: fill !important; }
         
-        /* ইন্সট্যান্ট হাইড ক্লাস */
         .hide-now {
             opacity: 0 !important;
             visibility: hidden !important;
-            transition: opacity 0.2s ease !important;
+            transition: opacity 0.3s ease !important;
         }
+
+        /* এরর মেসেজ স্টাইল */
+        .error-content {
+            text-align: center;
+            color: #fff;
+            z-index: 10000;
+        }
+        .error-content i { font-size: 40px; color: #ff4d4d; margin-bottom: 15px; }
+        .error-content p { font-size: 16px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="loader-container">
+    <div class="loader-container" id="loader-inner">
         <div class="neon-ring"></div>
         <div class="neon-ring"></div>
         <div class="particles"></div>
@@ -162,15 +164,28 @@
             player.setVolume(100);
         });
 
-        // ভিডিও প্লে শুরু হওয়া মাত্রই হাইড হবে (Instant Hide)
         player.on("play", function() {
             document.getElementById("loader").classList.add("hide-now");
         });
 
+        // পপআপ এর বদলে প্লেয়ারের ভেতর মেসেজ দেখাবে
         player.on("error", function() {
-            alert("Stream Offline!");
+            const loader = document.getElementById("loader");
+            loader.classList.remove("hide-now"); 
+            loader.style.opacity = "1";
+            loader.style.visibility = "visible";
+            
+            loader.innerHTML = `
+                <div class="error-content">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Stream Offline or Expired!</p>
+                    <div class="brand-name">RS <span>TV</span></div>
+                </div>
+            `;
         });
 
+    } else {
+        document.getElementById("loader").innerHTML = '<div class="error-content"><p>No Stream URL Found!</p></div>';
     }
 </script>
 
