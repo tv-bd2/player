@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Pro - Clean & Fast</title>
+    <title>RS Player Pro - Premium Loader</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
@@ -17,91 +17,134 @@
         * { margin:0; padding:0; box-sizing:border-box; }
         html, body { 
             width:100%; height:100%; background:#000; 
-            overflow:hidden; font-family: 'Segoe UI', sans-serif; 
+            overflow:hidden; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             position: fixed; touch-action: none;
         }
         
-        /* ভিডিও রোটেট ও স্ট্রেচ ফিক্স */
-        #player { width:100% !important; height:100% !important; position: absolute; }
+        /* ভিডিও কন্টেইনার */
+        #player { width:100% !important; height:100% !important; position: absolute; z-index: 1; }
         
-        /* জোরপূর্বক ভিডিও ফিল এবং সঠিক রেশিও */
+        /* ভিডিও ফিট ফিক্স */
         .jw-video.jw-reset { 
-            object-fit: contain !important; /* রোটেট হলে ভিডিও কাটবে না */
+            object-fit: contain !important; 
             background: #000;
         }
 
-        /* লোডার কন্টেইনার (মডার্ন ডিজাইন) */
+        /* --- নতুন প্রিমিয়াম লোডার ইউআই --- */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
-            background: #000; display:flex; justify-content:center; align-items:center;
-            z-index:9999; transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: radial-gradient(circle, #1a1a1a 0%, #000000 100%); /* হালকা গ্রেডিয়েন্ট ব্যাকগ্রাউন্ড */
+            display:flex; justify-content:center; align-items:center;
+            z-index:9999; 
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
         }
 
-        .loader-container {
-            position: relative; width: 150px; height: 150px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        .loader-content {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
 
-        /* প্রিমিয়াম লোডিং স্পিনার (নতুন এনিমেশন) */
-        .neon-spinner {
-            position: absolute; width: 100%; height: 100%;
-            border-radius: 50%; border: 3px solid transparent;
+        /* গ্লোয়িং অরবিটাল রিং (মানুষের নজর কাড়ার জন্য) */
+        .vortex-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 2px solid transparent;
             border-top-color: #00c3ff;
-            border-bottom-color: transparent;
-            animation: modernSpin 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            border-bottom-color: #00c3ff;
+            box-shadow: 0 0 20px rgba(0, 195, 255, 0.5), inset 0 0 20px rgba(0, 195, 255, 0.5);
+            animation: vortexSpin 2s linear infinite;
         }
 
-        .neon-spinner:before,
-        .neon-spinner:after {
+        .vortex-ring:after {
             content: '';
             position: absolute;
-            border-radius: 50%;
-            border: 3px solid transparent;
-        }
-
-        .neon-spinner:before {
-            top: 5px; left: 5px; right: 5px; bottom: 5px;
-            border-top-color: #ff007f;
-            border-bottom-color: transparent;
-            animation: modernSpin 1s linear infinite reverse;
-        }
-
-        .neon-spinner:after {
             top: 15px; left: 15px; right: 15px; bottom: 15px;
-            border-top-color: #00c3ff;
-            border-bottom-color: transparent;
-            animation: modernSpin 0.8s ease-in-out infinite;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-left-color: #ff007f; /* ম্যাজেন্টা কালার টাচ */
+            border-right-color: #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5);
+            animation: vortexSpin 1.5s linear infinite reverse;
         }
 
-        @keyframes modernSpin {
+        /* মাঝখানের ব্র্যান্ডিং এলাকা */
+        .brand-core {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+
+        /* পালসিং টিভি আইকন (স্পষ্ট এবং আকর্ষণীয়) */
+        .tv-icon-new {
+            font-size: 50px;
+            color: #fff;
+            text-shadow: 0 0 15px #00c3ff, 0 0 30px #00c3ff;
+            animation: iconPulse 1.5s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+
+        /* আরএস লাইভ টিভি টেক্সট */
+        .brand-text-new {
+            font-size: 16px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+
+        .brand-text-new span {
+            color: #00c3ff;
+            text-shadow: 0 0 10px #00c3ff;
+        }
+
+        /* লোডিং টেক্সট */
+        .loading-status {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 1px;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+
+        /* এনিমেশন কি-ফ্রেমস */
+        @keyframes vortexSpin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        .loader-brand { text-align: center; z-index: 10; margin-top: 15px; }
-        .tv-icon { font-size: 30px; color: #00c3ff; text-shadow: 0 0 10px #00c3ff; animation: pulseIcon 1.5s ease-in-out infinite; }
-        .brand-name { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 1px; margin-top: 5px; text-transform: uppercase; }
-
-        @keyframes pulseIcon {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; text-shadow: 0 0 15px #00c3ff, 0 0 30px #00c3ff; }
+            50% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 20px #00c3ff, 0 0 40px #00c3ff, 0 0 60px #ff007f; }
         }
 
+        /* হাইড করার ক্লাস */
         .hide-now { opacity: 0 !important; visibility: hidden !important; }
 
-        /* এরর মেসেজ */
-        .error-ui { text-align: center; color: #fff; }
-        .error-ui i { font-size: 40px; color: #ff4d4d; margin-bottom: 15px; }
+        /* এরর মেসেজ স্টাইল */
+        .error-ui-new { text-align: center; color: #fff; z-index: 10; }
+        .error-ui-new i { font-size: 50px; color: #ff4d4d; text-shadow: 0 0 15px #ff4d4d; margin-bottom: 20px; }
+        .error-ui-new p { font-size: 18px; font-weight: 600; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="loader-container">
-        <div class="neon-spinner"></div>
-        <div class="loader-brand">
-            <i class="fas fa-tv tv-icon"></i>
-            <div class="brand-name">RS LIVE <span>TV</span></div>
+    <div class="loader-content">
+        <div class="vortex-ring"></div>
+        
+        <div class="brand-core">
+            <i class="fas fa-tv tv-icon-new"></i>
+            <div class="brand-text-new">RS LIVE <span>TV</span></div>
+            <div class="loading-status">Connecting to stream...</div>
         </div>
     </div>
 </div>
@@ -109,50 +152,70 @@
 <div id="player"></div>
 
 <script>
+    // URL থেকে স্ট্রিম লিঙ্ক নেওয়ার ফাংশন
     const urlParams = new URLSearchParams(window.location.search);
     const streamSource = urlParams.get('url');
+    const loader = document.getElementById("loader");
 
     if (streamSource) {
+        // JW Player সেটআপ
         const player = jwplayer("player").setup({
             playlist: [{ file: streamSource, type: "hls" }],
             width: "100%",
             height: "100%",
             autostart: true,
-            stretching: "uniform", // রোটেট সমস্যার জন্য uniform সেরা
+            stretching: "uniform", // ভিডিও সঠিক রেশিওতে রাখার জন্য
             cast: {}, 
             playbackRateControls: false,
             displaytitle: false,
-            displaydescription: false
+            displaydescription: false,
+            // আপনি চাইলে কন্ট্রোলের কালারও চেঞ্জ করতে পারেন
+            skin: {
+                controlbar: {
+                    text: "#ffffff",
+                    icons: "#00c3ff" 
+                }
+            }
         });
 
         player.on("ready", function() {
+            // সাউন্ড ফুল এবং আনমিউট করা
             player.setMute(false);
             player.setVolume(100);
         });
 
+        // ভিডিও প্লে শুরু হলে লোডার সরে যাবে
         player.on("play", function() {
-            document.getElementById("loader").classList.add("hide-now");
+            loader.classList.add("hide-now");
         });
 
+        // বাফারিং হলে লোডার আবার আসবে
+        player.on("buffer", function() {
+            loader.classList.remove("hide-now");
+            document.querySelector(".loading-status").innerText = "Buffering...";
+        });
+
+        // এরর হ্যান্ডলিং (প্রিমিয়াম এরর স্ক্রিন)
         player.on("error", function() {
-            const loader = document.getElementById("loader");
             loader.classList.remove("hide-now");
             loader.innerHTML = `
-                <div class="error-ui">
-                    <i class="fas fa-redo-alt"></i>
-                    <p>Stream Error!</p>
-                    <div class="brand-name">RS LIVE <span>TV</span></div>
+                <div class="error-ui-new">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Stream Offline</p>
+                    <div class="brand-text-new">RS LIVE <span>TV</span></div>
+                    <div class="loading-status">Please try again later.</div>
                 </div>
             `;
         });
 
         // স্ক্রিন রোটেট ফিক্স
         window.addEventListener("orientationchange", function() {
-            player.resize(); 
+            setTimeout(() => { player.resize(); }, 200); 
         });
 
     } else {
-        document.getElementById("loader").innerHTML = '<div style="color:white">No URL Found</div>';
+        // URL না থাকলে এরর
+        loader.innerHTML = '<div class="brand-text-new" style="font-size:20px">NO URL FOUND</div>';
     }
 </script>
 
