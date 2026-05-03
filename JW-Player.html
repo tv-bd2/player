@@ -3,20 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Slim - Viblast Neon</title>
+    <title>RS Player Slim - DPlayer Neon</title>
 
-    <script src="https://cdn.viblast.com/vb/stable/viblast.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
+    
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', sans-serif; position: fixed; }
         
-        /* Viblast কন্টেইনার */
-        #viblast-container { width: 100% !important; height: 100% !important; position: absolute; top:0; left:0; }
-        video { width: 100%; height: 100%; object-fit: fill; }
+        /* DPlayer Container */
+        #dplayer { width: 100% !important; height: 100% !important; position: absolute; top:0; left:0; }
 
-        /* লোডার কন্টেইনার */
+        /* Loader Style */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
             background: #000; display:flex; justify-content:center; align-items:center;
@@ -38,9 +37,13 @@
 
         .hide-now { opacity: 0; visibility: hidden; pointer-events: none; }
 
-        /* এরর মেসেজ */
+        /* Error Message */
         .error-content { text-align: center; color: #fff; z-index: 10000; }
         .error-content i { font-size: 40px; color: #ff4d4d; margin-bottom: 15px; }
+
+        /* Customizing DPlayer Colors */
+        .dplayer-setting-speeds-item:hover, .dplayer-setting-quality-item:hover { color: #00c3ff !important; }
+        .dplayer-thumb { background: #00c3ff !important; }
     </style>
 </head>
 <body>
@@ -48,7 +51,7 @@
 <div id="loader">
     <div class="loader-container">
         <div class="neon-ring"></div>
-        <div class="neon-ring) "></div>
+        <div class="neon-ring"></div>
         <div class="loader-brand">
             <i class="fas fa-tv tv-icon"></i>
             <div class="brand-name">RS LIVE <span>TV</span></div>
@@ -56,42 +59,46 @@
     </div>
 </div>
 
-<div id="viblast-container">
-    <video id="rs-video" controls autoplay data-viblast-key="YOUR_FREE_KEY_IF_NEEDED"></video>
-</div>
+<div id="dplayer"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="https://cdn.jsdelivr.net/npm/dplayer/dist/DPlayer.min.js"></script>
 
 <script>
-    const video = document.getElementById('rs-video');
-    const loader = document.getElementById('loader');
-    
     function getStreamUrl() {
         const urlParams = new URLSearchParams(window.location.search);
         return urlParams.get('url');
     }
 
     const streamSource = getStreamUrl();
+    const loader = document.getElementById('loader');
 
     if (streamSource) {
-        // Viblast কনফিগারেশন
-        video.src = streamSource;
+        const dp = new DPlayer({
+            container: document.getElementById('dplayer'),
+            live: true,
+            autoplay: true,
+            theme: '#00c3ff', // আপনার নিয়ন ব্লু থিম
+            loop: true,
+            lang: 'en',
+            video: {
+                url: streamSource,
+                type: 'hls'
+            }
+        });
 
-        // লোডার হ্যান্ডলিং
-        video.addEventListener('playing', () => {
+        // প্লে শুরু হলে লোডার চলে যাবে
+        dp.on('playing', function () {
             loader.classList.add('hide-now');
         });
 
-        video.addEventListener('waiting', () => {
+        // বাফারিং হলে লোডার আবার আসবে
+        dp.on('waiting', function () {
             loader.classList.remove('hide-now');
         });
 
         // এরর হ্যান্ডলিং
-        video.addEventListener('error', function() {
-            showError();
-        });
-
-        // Viblast নির্দিষ্ট এরর চেক
-        video.addEventListener('viblast-error', function(ev) {
-            console.error('Viblast Error:', ev.detail);
+        dp.on('error', function () {
             showError();
         });
 
@@ -101,10 +108,12 @@
 
     function showError() {
         loader.classList.remove('hide-now');
+        loader.style.opacity = "1";
+        loader.style.visibility = "visible";
         loader.innerHTML = `
             <div class="error-content">
                 <i class="fas fa-exclamation-circle"></i>
-                <p>Stream Offline or Blocked!</p>
+                <p>Stream Offline or Expired!</p>
                 <div class="brand-name">RS LIVE <span>TV</span></div>
             </div>
         `;
