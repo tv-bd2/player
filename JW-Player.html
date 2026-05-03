@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Slim - Neon</title>
+    <title>RS Player Slim - Neon Ultra</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
@@ -23,6 +23,7 @@
             position:fixed; top:0; left:0; width:100%; height:100%;
             background: #000; display:flex; justify-content:center; align-items:center;
             z-index:9999; flex-direction: column;
+            transition: opacity 0.5s ease, visibility 0.5s;
         }
 
         .loader-container {
@@ -32,6 +33,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            will-change: transform;
         }
 
         .loader-brand { text-align: center; z-index: 10; }
@@ -52,12 +54,14 @@
         }
         .brand-name span { color: #00c3ff; }
 
+        /* এনিমেশন অপ্টিমাইজেশন */
         .neon-ring {
             position: absolute;
             width: 100%;
             height: 100%;
             border-radius: 50%;
             animation: ring-rotate 2s linear infinite;
+            will-change: transform;
         }
 
         .neon-ring:nth-child(1) {
@@ -78,6 +82,7 @@
             border-radius: 50%;
             box-shadow: 0 0 8px #00c3ff;
             animation: particle-move 2s linear infinite;
+            will-change: transform;
         }
 
         .particles:nth-child(3) { animation-delay: 0s; top: 0; left: 50%; }
@@ -101,7 +106,6 @@
         .hide-now {
             opacity: 0 !important;
             visibility: hidden !important;
-            transition: opacity 0.3s ease !important;
         }
 
         /* এরর মেসেজ স্টাইল */
@@ -148,7 +152,8 @@
         player.setup({
             playlist: [{
                 file: streamSource,
-                type: "hls"
+                type: "hls",
+                preload: "auto"
             }],
             width: "100%",
             height: "100%",
@@ -156,19 +161,29 @@
             mute: false,
             stretching: "exactfit", 
             controls: true,
-            displaytitle: false
+            displaytitle: false,
+            // উন্নত গতির জন্য কনফিগারেশন
+            hlsjsConfig: {
+                enableWorker: true,
+                lowLatencyMode: true,
+                liveSyncDurationCount: 3,
+                maxBufferLength: 30
+            }
         });
 
         player.on("ready", function() {
-            player.setMute(false);
             player.setVolume(100);
         });
 
-        player.on("play", function() {
+        // ভিডিও প্লে শুরু হওয়া বা বাফার শেষ হওয়া মাত্র লোডার হাইড হবে
+        const hideLoader = () => {
             document.getElementById("loader").classList.add("hide-now");
-        });
+        };
 
-        // পপআপ এর বদলে প্লেয়ারের ভেতর মেসেজ দেখাবে
+        player.on("play", hideLoader);
+        player.on("bufferFull", hideLoader);
+
+        // এরর হ্যান্ডলিং
         player.on("error", function() {
             const loader = document.getElementById("loader");
             loader.classList.remove("hide-now"); 
@@ -185,7 +200,12 @@
         });
 
     } else {
-        document.getElementById("loader").innerHTML = '<div class="error-content"><p>No Stream URL Found!</p></div>';
+        document.getElementById("loader").innerHTML = `
+            <div class="error-content">
+                <i class="fas fa-link-slash"></i>
+                <p>No Stream URL Found!</p>
+            </div>
+        `;
     }
 </script>
 
