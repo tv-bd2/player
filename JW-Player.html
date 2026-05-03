@@ -2,138 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Slim - Neon Ultra</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <title>RS Player - Auto Sound</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
         jwplayer.key="Khpp2dHxlBJHC8MCmLnBuV2jK/DwDnJMniwF6EO9HC/riJ712ZmbHg==";
     </script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
-        html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', sans-serif; position: fixed; }
-        
-        #player { width:100% !important; height:100% !important; position: absolute; top:0; left:0; }
-
-        /* লোডার কন্টেইনার */
+        html,body { width:100%; height:100%; background:#000; overflow:hidden; }
+        #player { width:100%; height:100%; position: absolute; top:0; left:0; }
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
-            background: #000; display:flex; justify-content:center; align-items:center;
-            z-index:9999; flex-direction: column;
-            transition: opacity 0.5s ease, visibility 0.5s;
+            background:#000; display:flex; justify-content:center; align-items:center;
+            z-index:9999; flex-direction:column;
         }
-
-        .loader-container {
-            position: relative;
-            width: 120px;
-            height: 120px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            will-change: transform;
+        .spinner {
+            width:50px; height:50px; border:4px solid rgba(255,255,255,.1);
+            border-top:4px solid #00c3ff; border-radius:50%;
+            animation:spin 1s linear infinite;
         }
-
-        .loader-brand { text-align: center; z-index: 10; }
-
-        .tv-icon {
-            font-size: 28px;
-            color: #00c3ff;
-            margin-bottom: 5px;
-            text-shadow: 0 0 10px rgba(0, 195, 255, 0.7);
-        }
-
-        .brand-name {
-            font-size: 12px;
-            font-weight: 700;
-            color: #fff;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .brand-name span { color: #00c3ff; }
-
-        /* এনিমেশন অপ্টিমাইজেশন */
-        .neon-ring {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            animation: ring-rotate 2s linear infinite;
-            will-change: transform;
-        }
-
-        .neon-ring:nth-child(1) {
-            border-bottom: 1.5px solid #00c3ff;
-            box-shadow: 0 2px 8px rgba(0, 195, 255, 0.4);
-        }
-
-        .neon-ring:nth-child(2) {
-            border-right: 1.5px solid rgba(255, 255, 255, 0.5);
-            animation: ring-rotate 1.5s linear infinite reverse;
-        }
-
-        .particles {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #00c3ff;
-            border-radius: 50%;
-            box-shadow: 0 0 8px #00c3ff;
-            animation: particle-move 2s linear infinite;
-            will-change: transform;
-        }
-
-        .particles:nth-child(3) { animation-delay: 0s; top: 0; left: 50%; }
-        .particles:nth-child(4) { animation-delay: 0.5s; top: 50%; right: 0; }
-        .particles:nth-child(5) { animation-delay: 1s; bottom: 0; left: 50%; }
-        .particles:nth-child(6) { animation-delay: 1.5s; top: 50%; left: 0; }
-
-        @keyframes ring-rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes particle-move {
-            0% { transform: rotate(0deg) translate(60px) rotate(0deg); opacity: 1; }
-            100% { transform: rotate(360deg) translate(60px) rotate(-360deg); opacity: 0.7; }
-        }
-
-        /* ভিডিও স্ট্রেচ ফিক্স */
-        .jw-video.jw-reset { object-fit: fill !important; }
-        
-        .hide-now {
-            opacity: 0 !important;
-            visibility: hidden !important;
-        }
-
-        /* এরর মেসেজ স্টাইল */
-        .error-content {
-            text-align: center;
-            color: #fff;
-            z-index: 10000;
-        }
-        .error-content i { font-size: 40px; color: #ff4d4d; margin-bottom: 15px; }
-        .error-content p { font-size: 16px; margin-bottom: 20px; }
+        @keyframes spin { 100% { transform:rotate(360deg); } }
+        #loader p { margin-top:15px; color:#fff; font-family: sans-serif; font-size:14px; }
     </style>
 </head>
 <body>
 
 <div id="loader">
-    <div class="loader-container" id="loader-inner">
-        <div class="neon-ring"></div>
-        <div class="neon-ring"></div>
-        <div class="particles"></div>
-        <div class="particles"></div>
-        <div class="particles"></div>
-        <div class="particles"></div>
-
-        <div class="loader-brand">
-            <i class="fas fa-tv tv-icon"></i>
-            <div class="brand-name">RS LIVE <span>TV</span></div>
-        </div>
-    </div>
+    <div class="spinner"></div>
+    <p id="status-text">Loading Stream...</p>
 </div>
 
 <div id="player"></div>
@@ -152,60 +51,38 @@
         player.setup({
             playlist: [{
                 file: streamSource,
-                type: "hls",
-                preload: "auto"
+                type: "hls"
             }],
             width: "100%",
             height: "100%",
-            autostart: true,
-            mute: false,
-            stretching: "exactfit", 
-            controls: true,
-            displaytitle: false,
-            // উন্নত গতির জন্য কনফিগারেশন
-            hlsjsConfig: {
-                enableWorker: true,
-                lowLatencyMode: true,
-                liveSyncDurationCount: 3,
-                maxBufferLength: 30
-            }
+            autostart: true,  // অটোমেটিক প্লে
+            mute: false,       // মিউট থাকবে না (সাউন্ড হবে)
+            stretching: "uniform",
+            controls: true
         });
 
         player.on("ready", function() {
+            document.getElementById("loader").style.display = "none";
+            
+            // ব্রাউজার যদি অটো-সাউন্ড ব্লক করে, তবে এই কমান্ডটি সাউন্ড আনমিউট করার চেষ্টা করবে
+            player.setMute(false);
             player.setVolume(100);
         });
 
-        // ভিডিও প্লে শুরু হওয়া বা বাফার শেষ হওয়া মাত্র লোডার হাইড হবে
-        const hideLoader = () => {
-            document.getElementById("loader").classList.add("hide-now");
-        };
+        player.on("play", function() {
+            document.getElementById("loader").style.display = "none";
+            // ভিডিও প্লে হওয়ার সময় আবার সাউন্ড চেক করা
+            if(player.getMute()) {
+                player.setMute(false);
+            }
+        });
 
-        player.on("play", hideLoader);
-        player.on("bufferFull", hideLoader);
-
-        // এরর হ্যান্ডলিং
         player.on("error", function() {
-            const loader = document.getElementById("loader");
-            loader.classList.remove("hide-now"); 
-            loader.style.opacity = "1";
-            loader.style.visibility = "visible";
-            
-            loader.innerHTML = `
-                <div class="error-content">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>Stream Offline or Expired!</p>
-                    <div class="brand-name">RS LIVE <span>TV</span></div>
-                </div>
-            `;
+            document.getElementById("status-text").innerText = "Stream Failed!";
         });
 
     } else {
-        document.getElementById("loader").innerHTML = `
-            <div class="error-content">
-                <i class="fas fa-link-slash"></i>
-                <p>No Stream URL Found!</p>
-            </div>
-        `;
+        document.getElementById("status-text").innerText = "No URL Provided!";
     }
 </script>
 
