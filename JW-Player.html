@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Slim - Final Update</title>
+    <title>RS Player Pro - No Cut Full Update</title>
 
     <script src="https://content.jwplatform.com/libraries/IDzF9Zmk.js"></script>
     <script>
@@ -19,12 +19,19 @@
         #player-wrapper { position: relative; width: 100%; height: 100%; overflow: hidden; }
         #player { width:100% !important; height:100% !important; position: absolute; top:0; left:0; }
 
-        /* --- স্ক্রিনশট অনুযায়ী গ্লাস হোয়াইট কন্ট্রোল --- */
-        .jw-skin-glow .jw-display-icon-container { background: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px); }
+        /* --- কন্ট্রোলার কাস্টমাইজেশন (ব্লার রিমুভড) --- */
+        .jw-skin-glow .jw-display-icon-container { 
+            background: rgba(255, 255, 255, 0.1) !important; 
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            backdrop-filter: none !important; /* ব্লার রিমুভ করা হয়েছে */
+        }
         .jw-skin-glow .jw-button-color { color: #ffffff !important; }
-        .jw-skin-glow .jw-controlbar { background: rgba(0, 0, 0, 0.1) !important; backdrop-filter: blur(10px); }
+        .jw-skin-glow .jw-controlbar { 
+            background: transparent !important; /* ব্যাকগ্রাউন্ড পুরোপুরি স্বচ্ছ */
+            backdrop-filter: none !important; /* ব্লার রিমুভ করা হয়েছে */
+        }
 
-        /* --- লোডার ডিজাইন (প্লেয়ারের ভেতরে ফিক্সড) --- */
+        /* --- লোডার ডিজাইন --- */
         #loader {
             position: absolute; top:0; left:0; width:100%; height:100%;
             background: #000; display:flex; justify-content:center; align-items:center;
@@ -41,11 +48,10 @@
         .brand-name { font-size: 14px; font-weight: 700; color: #fff; text-transform: uppercase; margin-top: 10px; letter-spacing: 1px; }
         .brand-name span { color: #00c3ff; }
 
-        /* নিয়ন রিং ইফেক্ট (স্ক্রিনশট অনুযায়ী) */
         .neon-ring {
             position: absolute; width: 100%; height: 100%;
             border-radius: 50%; border: 2.5px solid transparent;
-            animation: rotate-vortex 1.5s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+            animation: rotate-vortex 1.5s linear infinite;
         }
         .neon-ring:nth-child(1) { border-top: 2.5px solid #00c3ff; border-right: 2.5px solid #00c3ff; box-shadow: 0 0 15px #00c3ff; }
         .neon-ring:nth-child(2) { border-bottom: 2.5px solid #ff007f; border-left: 2.5px solid #ff007f; animation-direction: reverse; animation-duration: 2s; box-shadow: 0 0 15px #ff007f; }
@@ -54,19 +60,16 @@
 
         .loading-text { color: rgba(255, 255, 255, 0.6); font-size: 11px; margin-top: 15px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* --- ভিডিও ফিল এবং জুম ফিক্স --- */
-        .jw-video.jw-reset { object-fit: cover !important; }
+        /* --- ভিডিও সাইড কাটা ফিক্স --- */
+        .jw-video.jw-reset { 
+            object-fit: fill !important; /* এটি ভিডিওকে স্ট্রেচ করে পুরো স্ক্রিন ফিল করবে, সাইড কাটবে না */
+        }
         
         .hide-now { opacity: 0 !important; visibility: hidden !important; }
 
         /* এরর মেসেজ */
         .error-content { text-align: center; color: #fff; z-index: 100; }
         .error-content i { font-size: 50px; color: #ff4d4d; margin-bottom: 15px; }
-
-        /* অটো রোটেট ফুলস্ক্রিন */
-        @media screen and (orientation: portrait) {
-            .jw-state-fullscreen { transform: rotate(90deg); width: 100vh !important; height: 100vw !important; }
-        }
     </style>
 </head>
 <body>
@@ -96,13 +99,11 @@
             width: "100%",
             height: "100%",
             autostart: true,
-            stretching: "fill", 
+            stretching: "exactfit", /* ভিডিও টেনে পুরো স্ক্রিন জুড়ে দেখানোর জন্য */
             skin: { name: "glow" },
-            cast: {},
             displaytitle: false
         });
 
-        // ফাস্ট লোডিং অপ্টিমাইজেশন
         player.on("ready", () => {
             player.setMute(false);
             player.setVolume(100);
@@ -122,16 +123,10 @@
             loader.innerHTML = `
                 <div class="error-content">
                     <i class="fas fa-exclamation-triangle"></i>
-                    <p>Stream Offline or Expired!</p>
+                    <p>Stream Offline!</p>
                     <div class="brand-name">RS LIVE <span>TV</span></div>
                 </div>
             `;
-        });
-
-        // জুম টু ফিল ফিক্স
-        player.on("fullscreen", (e) => {
-            const video = document.querySelector('video');
-            if(video) video.style.objectFit = e.fullscreen ? "cover" : "cover";
         });
 
     } else {
