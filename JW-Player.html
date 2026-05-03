@@ -3,27 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <title>RS Player Slim - Plyr Neon</title>
+    <title>RS Player Slim - Viblast Neon</title>
 
-    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.viblast.com/vb/stable/viblast.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
+
     <style>
-        /* বেসিক সেটআপ */
         * { margin:0; padding:0; box-sizing:border-box; }
         html, body { width:100%; height:100%; background:#000; overflow:hidden; font-family: 'Segoe UI', sans-serif; position: fixed; }
         
-        /* কন্টেইনার ফিক্স */
-        .video-container { width:100%; height:100%; position: absolute; }
+        /* Viblast কন্টেইনার */
+        #viblast-container { width: 100% !important; height: 100% !important; position: absolute; top:0; left:0; }
         video { width: 100%; height: 100%; object-fit: fill; }
 
-        /* Plyr কাস্টমাইজেশন (Neon Theme) */
-        :root {
-            --plyr-color-main: #00c3ff; /* নিয়ন ব্লু */
-            --plyr-video-control-background-hover: rgba(0, 195, 255, 0.2);
-        }
-
-        /* লোডার ডিজাইন (আপনার বর্তমান স্টাইল অনুযায়ী) */
+        /* লোডার কন্টেইনার */
         #loader {
             position:fixed; top:0; left:0; width:100%; height:100%;
             background: #000; display:flex; justify-content:center; align-items:center;
@@ -43,11 +36,11 @@
 
         @keyframes ring-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .hide-now { opacity: 0; visibility: hidden; pointer-events: none; }
+
         /* এরর মেসেজ */
         .error-content { text-align: center; color: #fff; z-index: 10000; }
         .error-content i { font-size: 40px; color: #ff4d4d; margin-bottom: 15px; }
-
-        .hide-now { opacity: 0; visibility: hidden; }
     </style>
 </head>
 <body>
@@ -55,7 +48,7 @@
 <div id="loader">
     <div class="loader-container">
         <div class="neon-ring"></div>
-        <div class="neon-ring"></div>
+        <div class="neon-ring) "></div>
         <div class="loader-brand">
             <i class="fas fa-tv tv-icon"></i>
             <div class="brand-name">RS LIVE <span>TV</span></div>
@@ -63,70 +56,58 @@
     </div>
 </div>
 
-<div class="video-container">
-    <video id="player" playsinline controls></video>
+<div id="viblast-container">
+    <video id="rs-video" controls autoplay data-viblast-key="YOUR_FREE_KEY_IF_NEEDED"></video>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
-
 <script>
-    const video = document.querySelector('#player');
+    const video = document.getElementById('rs-video');
     const loader = document.getElementById('loader');
-    const urlParams = new URLSearchParams(window.location.search);
-    const source = urlParams.get('url');
+    
+    function getStreamUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get('url');
+    }
 
-    if (!source) {
-        loader.innerHTML = '<div class="error-content"><p>No Stream URL Found!</p></div>';
-    } else {
-        // Plyr অপশনস
-        const player = new Plyr(video, {
-            controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen'],
-            settings: ['quality', 'speed'],
-            ratio: '16:9'
-        });
+    const streamSource = getStreamUrl();
 
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(source);
-            hls.attachMedia(video);
-            window.hls = hls;
+    if (streamSource) {
+        // Viblast কনফিগারেশন
+        video.src = streamSource;
 
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play().catch(() => {
-                    console.log("Autoplay blocked, waiting for interaction");
-                });
-            });
-
-            hls.on(Hls.Events.ERROR, function(event, data) {
-                if (data.fatal) {
-                    showError();
-                }
-            });
-        } 
-        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = source;
-        }
-
-        // ইভেন্ট লিসেনার
+        // লোডার হ্যান্ডলিং
         video.addEventListener('playing', () => {
             loader.classList.add('hide-now');
         });
 
-        video.addEventListener('error', () => {
+        video.addEventListener('waiting', () => {
+            loader.classList.remove('hide-now');
+        });
+
+        // এরর হ্যান্ডলিং
+        video.addEventListener('error', function() {
             showError();
         });
 
-        function showError() {
-            loader.classList.remove('hide-now');
-            loader.innerHTML = `
-                <div class="error-content">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <p>Stream Offline or Expired!</p>
-                    <div class="brand-name">RS LIVE <span>TV</span></div>
-                </div>
-            `;
-        }
+        // Viblast নির্দিষ্ট এরর চেক
+        video.addEventListener('viblast-error', function(ev) {
+            console.error('Viblast Error:', ev.detail);
+            showError();
+        });
+
+    } else {
+        loader.innerHTML = '<div class="error-content"><p>No Stream URL Found!</p></div>';
+    }
+
+    function showError() {
+        loader.classList.remove('hide-now');
+        loader.innerHTML = `
+            <div class="error-content">
+                <i class="fas fa-exclamation-circle"></i>
+                <p>Stream Offline or Blocked!</p>
+                <div class="brand-name">RS LIVE <span>TV</span></div>
+            </div>
+        `;
     }
 </script>
 
